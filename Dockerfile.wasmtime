@@ -1,0 +1,13 @@
+FROM --platform=$BUILDPLATFORM rust:1.74 AS build
+RUN mkdir -p /build
+WORKDIR /build
+COPY Cargo.toml .
+COPY src ./src
+RUN cargo build --release
+RUN chmod a+x /build/target/release/docker-wasm-demo-rust
+
+FROM alpine:3.18
+COPY --link --from=build /build/target/release/docker-wasm-demo-rust /hello
+ENTRYPOINT [ "/hello" ]
+
+
